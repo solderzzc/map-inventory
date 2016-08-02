@@ -26,7 +26,8 @@ Template.floorplan.onRendered( function() {
 
             if(!!selected_circle){ //TODO: change this into a function or something
                 selected_circle.style("fill", "purple");
-                selected_circle = null;
+                selected_circle = null
+                //selected_printer_id.set(null); //undo
             }
 
             if (!!current_circle) {
@@ -36,12 +37,13 @@ Template.floorplan.onRendered( function() {
             current_circle = svg.append("circle")
                 .attr("cx", d3.mouse(this)[0])
                 .attr("cy", d3.mouse(this)[1])
-                .attr("r", 13).style("fill", "red");
-
+                .attr("r", 16).style("fill", "red");
+            selected_printer_id.set(null);
 
         });
         map_ready.set(true);
-        selected_printer_id.set(null);
+
+
     });
 });
 /*
@@ -75,7 +77,7 @@ var populate_map = function(){
         svg.append("circle")
             .attr("cx", printer.coordinates[0])
             .attr("cy", printer.coordinates[1])
-            .attr("r", 13).style("fill", "purple")
+            .attr("r", 16).style("fill", "purple")
             .attr("data-mongo-id", printer._id)
             .on("click", function(d, i, nodes){
 //if something was selected, restore it
