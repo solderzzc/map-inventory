@@ -6,6 +6,8 @@
 var current_coords = new ReactiveVar();
 var svg;
 var map_ready = new ReactiveVar(false);
+var selected_printer_id = new ReactiveVar();
+var selected_circle;
 
 Template.floorplan.onRendered( function() {
     map_ready.set(false);
@@ -19,8 +21,13 @@ Template.floorplan.onRendered( function() {
             .attr("viewBox", "0 0 1870 1210");
 
         var current_circle;
-        svg.on("click", function () { //TODO: Move into meteor event?
+        svg.on("click", function () { //TODO: Move into meteor event? cant do that
             current_coords.set(d3.mouse(this));
+
+            if(!!selected_circle){ //TODO: change this into a function or something
+                selected_circle.style("fill", "purple");
+                selected_circle = null;
+            }
 
             if (!!current_circle) {
                 current_circle.remove();
@@ -32,10 +39,9 @@ Template.floorplan.onRendered( function() {
                 .attr("r", 13).style("fill", "red");
 
 
-
-
         });
         map_ready.set(true);
+        selected_printer_id.set(null);
     });
 });
 /*
@@ -71,14 +77,23 @@ var populate_map = function(){
             .attr("cy", printer.coordinates[1])
             .attr("r", 13).style("fill", "purple")
             .attr("data-mongo-id", printer._id)
-            .on("click", function(){
-                console.log(d3.event.target.attributes.getNamedItem("data-mongo-id").value); //holy shit
+            .on("click", function(d, i, nodes){
+//if something was selected, restore it
+                if(!!selected_circle){
+                    console.log("??");
+                    selected_circle.style("fill", "purple");
+                }
+
                 d3.event.stopPropagation();
                 d3.event.preventDefault();
-                var related_printer = d3.event.target.attributes.getNamedItem("data-mongo-id").value;
-                console.log("related_printer", related_printer);
-                console.log(Printers.findOne({_id: related_printer}));
+                selected_circle = d3.select(d3.event.target);
+                var related_printer = selected_circle.attr("data-mongo-id");
+                //console.log(d3.select(d3.event.target).attr("data-mongo-id"));
+                selected_printer_id.set(related_printer);
 
+
+                //color the new one
+                selected_circle.style("fill", "green");
             });
     })
 };
@@ -93,7 +108,6 @@ Template.form.events({
         var make = target.make.value;
         var network_address = target.network_address.value;
         var location = target.location.value;
-
         if (current_coords.get() && ip_address && model && make) {
 
             var printer = {
@@ -113,5 +127,12 @@ Template.form.events({
         else{
             Materialize.toast("Please choose a location and fill out the required information", 4000);
         }
+    }
+});
+
+Template.info.helpers({
+    "current_printer": function(){
+        console.log(selected_printer_id.get());
+        return Printers.findOne({_id: selected_printer_id.get()});
     }
 });
