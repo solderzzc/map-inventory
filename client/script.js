@@ -102,6 +102,7 @@ var populate_map = function(){
 
                 //color the new one
                 selected_circle.style("fill", "green");
+
             });
     })
 };
@@ -116,24 +117,42 @@ Template.form.events({
         var make = target.make.value;
         var network_address = target.network_address.value;
         var location = target.location.value;
-        if (current_coords.get() && ip_address && model && make) {
+        var printer = {
+            "make": make,
+            "model": model,
+            "ip_address": ip_address,
+            "network_address": network_address,
+            "location": location
+        };
 
-            var printer = {
-                "make": make,
-                "model": model,
-                "ip_address": ip_address,
-                "network_address": network_address,
-                "location": location,
-                "coordinates": current_coords.get()
-            };
-            //console.log(printer);
+        if(!selected_printer_id.get()) { //no printer selected
 
-            Printers.insert(printer);
-            Materialize.toast("Printer successfully added");
-            event.target.reset();
+            if (current_coords.get() && ip_address && model && make) {
+
+                //console.log(printer);
+                printer.coordinates = current_coords.get();
+                Printers.insert(printer);
+                Materialize.toast("Printer successfully added");
+                event.target.reset();
+            }
+            else {
+                Materialize.toast("Please choose a location and fill out the required information", 4000);
+            }
         }
-        else{
-            Materialize.toast("Please choose a location and fill out the required information", 4000);
+        else{ //update the printer
+            old_printer = Printers.findOne({_id: selected_printer_id.get()});
+            delete old_printer._id;
+            _.each(printer, function(value, key){
+                if(value){
+                    old_printer[key] = value;
+                }
+            });
+            Printers.update(
+                {_id: selected_printer_id.get()},
+                {
+                    $set: old_printer
+                }
+            )
         }
     }
 });
