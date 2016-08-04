@@ -132,6 +132,16 @@ Template.form.events({
     }
 });
 
+Template.form.onRendered(function(){
+    $('#make').autocomplete({
+        data: {
+            "Lexmark": null,
+            "HP": null,
+            "Ricoh": null
+        }
+    })
+});
+
 Template.info.helpers({
     "current_printer": function(){
         console.log(selected_printer_id.get());
