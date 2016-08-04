@@ -13,12 +13,12 @@ Template.floorplan.onRendered( function() {
     map_ready.set(false);
     d3.select("htmlEmbed").classed("svg-container", true);
 
-    d3.xml("/1.svg", function (xml) {
+    d3.xml("/floor2.svg", function (xml) {
         document.getElementById("htmlEmbed").appendChild(xml.documentElement);
         svg = d3.selectAll("svg");
         //console.log(svg);
-        svg.attr("preserveAspectRatio", "xMidYMid meet")
-            .attr("viewBox", "0 0 1870 1210");
+        svg.attr("preserveAspectRatio", "xMidYMid meet");
+            //.attr("viewBox", "0 0 1870 1210");
 
         var current_circle;
         svg.on("click", function () { //TODO: Move into meteor event? cant do that
