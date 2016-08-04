@@ -26,10 +26,9 @@ Template.floorplan.onRendered( function() {
 
             if(!!selected_circle){ //TODO: change this into a function or something
                 selected_circle.style("fill", "purple");
-                selected_circle = null
+                selected_circle = null;
                 //selected_printer_id.set(null); //undo
             }
-
             if (!!current_circle) {
                 current_circle.remove();
             }
@@ -39,6 +38,7 @@ Template.floorplan.onRendered( function() {
                 .attr("cy", d3.mouse(this)[1])
                 .attr("r", 16).style("fill", "red");
             selected_printer_id.set(null);
+            selected_circle = current_circle;
 
         });
         map_ready.set(true);
@@ -82,8 +82,14 @@ var populate_map = function(){
             .on("click", function(d, i, nodes){
 //if something was selected, restore it
                 if(!!selected_circle){
-                    console.log("??");
-                    selected_circle.style("fill", "purple");
+                    console.log(selected_circle.style("fill"));
+                    console.log(d3.color("red"));
+                    if(selected_circle.style("fill") == d3.color("red")){
+                        selected_circle.remove();
+                    }
+                    else {
+                        selected_circle.style("fill", "purple");
+                    }
                 }
 
                 d3.event.stopPropagation();
@@ -144,7 +150,7 @@ Template.form.onRendered(function(){
 
 Template.info.helpers({
     "current_printer": function(){
-        console.log(selected_printer_id.get());
+        //console.log(selected_printer_id.get());
         return Printers.findOne({_id: selected_printer_id.get()});
     }
 });

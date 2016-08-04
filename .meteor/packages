@@ -19,4 +19,3 @@ ecmascript              # Enable ECMAScript2015+ syntax in app code
 
 insecure                # Allow all DB writes from clients (for prototyping)
 materialize:materialize
-d3js:d3
